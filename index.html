@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOTS Shards Calculation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .credit {
+            font-size: 14px;
+            color: #666;
+        }
+        .filter-section {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .filter-section div {
+            margin-bottom: 10px;
+        }
+        .preset-section {
+            background-color: #e6f7ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .preset-buttons {
+            margin-top: 10px;
+        }
+        button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            cursor: pointer;
+        }
+        th:hover {
+            background-color: #e6e6e6;
+        }
+        .sort-icon {
+            margin-left: 5px;
+        }
+        .preset-list {
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 5px;
+        }
+        .preset-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        .preset-item:last-child {
+            border-bottom: none;
+        }
+        .preset-actions button {
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>TOTS Shards Calculation</h1>
+        <div class="credit">Developed by: Afif Munir</div>
+    </div>
+
+    <div class="filter-section">
+        <h2>Filters</h2>
+        <div>
+            <label for="ovr-filter">OVR Filter:</label>
+            <select id="ovr-filter">
+                <option value="all">All</option>
+                <option value="106">106</option>
+                <option value="107">107</option>
+                <option value="108">108</option>
+                <option value="109">109</option>
+                <option value="106-107">106-107</option>
+                <option value="107-108">107-108</option>
+                <option value="108-109">108-109</option>
+                <option value="106-108">106-108</option>
+                <option value="107-109">107-109</option>
+            </select>
+        </div>
+        <div>
+            <label for="shard-filter">Shard Cost Filter:</label>
+            <input type="range" id="shard-filter" min="0" max="2000" value="2000" step="100">
+            <span id="shard-value">2000</span>
+        </div>
+    </div>
+
+    <div class="filter-section">
+        <h2>Sorting</h2>
+        <div>
+            <label for="sort-by">Sort By:</label>
+            <select id="sort-by">
+                <option value="name">Name</option>
+                <option value="ovr">OVR</option>
+                <option value="position">Position</option>
+                <option value="shard-cost">Shard Cost</option>
+            </select>
+            <select id="sort-order">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="preset-section">
+        <h2>Presets</h2>
+        <div>
+            <label for="preset-name">Preset Name:</label>
+            <input type="text" id="preset-name" placeholder="Enter preset name">
+            <div class="preset-buttons">
+                <button id="save-preset">Save Preset</button>
+                <button id="load-preset">Load Preset</button>
+            </div>
+        </div>
+        <div class="preset-list" id="preset-list">
+            <!-- Presets will be loaded here -->
+        </div>
+    </div>
+
+    <table id="player-table">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th id="name-header">Name <span class="sort-icon">↕</span></th>
+                <th id="ovr-header">OVR <span class="sort-icon">↕</span></th>
+                <th id="position-header">Position <span class="sort-icon">↕</span></th>
+                <th id="shard-cost-header">Shard Cost <span class="sort-icon">↕</span></th>
+            </tr>
+        </thead>
+        <tbody id="player-table-body">
+            <!-- Player data will be inserted here by JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        // Player data
+        const players = [
+            { no: 1, name: "Henry", ovr: 109, position: "LW", shardCost: 1500 },
+            { no: 2, name: "Van Basten", ovr: 109, position: "ST", shardCost: 1250 },
+            { no: 3, name: "Alowairan", ovr: 108, position: "RW", shardCost: 800 },
+            { no: 4, name: "Gerrard", ovr: 108, position: "CM", shardCost: 650 },
+            { no: 5, name: "Vitinha", ovr: 107, position: "CM", shardCost: 450 },
+            { no: 6, name: "Shevchenko", ovr: 107, position: "ST", shardCost: 300 },
+            { no: 7, name: "Barcola", ovr: 106, position: "LW", shardCost: 300 },
+            { no: 8, name: "Thuram", ovr: 109, position: "RB", shardCost: 1250 },
+            { no: 9, name: "Donnarumma", ovr: 108, position: "GK", shardCost: 1000 },
+            { no: 10, name: "Dembélé", ovr: 108, position: "RW", shardCost: 800 },
+            { no: 11, name: "João Neves", ovr: 108, position: "CDM", shardCost: 500 },
+            { no: 12, name: "Marquinhos", ovr: 107, position: "CB", shardCost: 450 },
+            { no: 13, name: "Rabiot", ovr: 107, position: "CM", shardCost: 300 },
+            { no: 14, name: "Højbjerg", ovr: 106, position: "CDM", shardCost: 200 },
+            { no: 15, name: "Lucio", ovr: 109, position: "CB", shardCost: 1500 },
+            { no: 16, name: "Ribery", ovr: 109, position: "LW", shardCost: 1250 },
+            { no: 17, name: "Kane", ovr: 108, position: "ST", shardCost: 800 },
+            { no: 18, name: "Kohler", ovr: 108, position: "CB", shardCost: 650 },
+            { no: 19, name: "Xabi Alonso", ovr: 108, position: "CM", shardCost: 500 },
+            { no: 20, name: "Musiala", ovr: 107, position: "CAM", shardCost: 450 },
+            { no: 21, name: "Kimmich", ovr: 107, position: "RB", shardCost: 450 },
+            { no: 22, name: "Beckenbauer", ovr: 109, position: "CDM", shardCost: 1250 },
+            { no: 23, name: "Davies", ovr: 108, position: "LB", shardCost: 1000 },
+            { no: 24, name: "Wirtz", ovr: 108, position: "CAM", shardCost: 650 },
+            { no: 25, name: "Zé Roberto", ovr: 108, position: "LM", shardCost: 650 },
+            { no: 26, name: "Tah", ovr: 107, position: "CB", shardCost: 450 },
+            { no: 27, name: "Olise", ovr: 107, position: "RW", shardCost: 450 },
+            { no: 28, name: "Upamecano", ovr: 107, position: "CB", shardCost: 300 },
+            { no: 29, name: "Gullit", ovr: 109, position: "CM", shardCost: 1500 },
+            { no: 30, name: "Beckham", ovr: 109, position: "RM", shardCost: 1000 },
+            { no: 31, name: "Isak", ovr: 108, position: "ST", shardCost: 1000 },
+            { no: 32, name: "Ramires", ovr: 108, position: "CDM", shardCost: 650 },
+            { no: 33, name: "Van Dijk", ovr: 107, position: "CB", shardCost: 800 },
+            { no: 34, name: "Rice", ovr: 107, position: "CDM", shardCost: 450 },
+            { no: 35, name: "Koeman", ovr: 107, position: "CB", shardCost: 300 },
+            { no: 36, name: "Jairzinho", ovr: 109, position: "RW", shardCost: 1250 },
+            { no: 37, name: "Salah", ovr: 108, position: "RW", shardCost: 1000 },
+            { no: 38, name: "Dalglish", ovr: 108, position: "ST", shardCost: 650 },
+            { no: 39, name: "Díaz", ovr: 108, position: "LW", shardCost: 650 },
+            { no: 40, name: "Saliba", ovr: 107, position: "CB", shardCost: 600 },
+            { no: 41, name: "Alexander-Arnold", ovr: 107, position: "RB", shardCost: 450 },
+            { no: 42, name: "Gabriel", ovr: 106, position: "CB", shardCost: 300 },
+            { no: 43, name: "Ronaldo", ovr: 109, position: "ST", shardCost: 2000 },
+            { no: 44, name: "Rijkaard", ovr: 109, position: "CDM", shardCost: 1000 },
+            { no: 45, name: "Lukaku", ovr: 108, position: "ST", shardCost: 650 },
+            { no: 46, name: "Bastoni", ovr: 108, position: "CB", shardCost: 500 },
+            { no: 47, name: "Barella", ovr: 108, position: "CM", shardCost: 500 },
+            { no: 48, name: "Dimarco", ovr: 107, position: "LB", shardCost: 450 },
+            { no: 49, name: "Doumbia", ovr: 107, position: "ST", shardCost: 450 },
+            { no: 50, name: "Maldini", ovr: 109, position: "LB", shardCost: 1500 },
+            { no: 51, name: "Zambrotta", ovr: 108, position: "RB", shardCost: 800 },
+            { no: 52, name: "Gervinho", ovr: 108, position: "LW", shardCost: 650 },
+            { no: 53, name: "Sneijder", ovr: 108, position: "CAM", shardCost: 500 },
+            { no: 54, name: "Retegui", ovr: 108, position: "ST", shardCost: 500 },
+            { no: 55, name: "Lookman", ovr: 107, position: "ST", shardCost: 450 },
+            { no: 56, name: "Ibarbo", ovr: 107, position: "RW", shardCost: 450 }
+        ];
+
+        // Position order for sorting
+        const positionOrder = {
+            "GK": 1,
+            "CB": 2,
+            "LB": 3,
+            "RB": 4,
+            "CDM": 5,
+            "CM": 6,
+            "CAM": 7,
+            "LM": 8,
+            "RM": 9,
+            "ST": 10,
+            "LW": 11,
+            "RW": 12
+        };
+
+        // Function to render the player table
+        function renderPlayerTable(data) {
+            const tableBody = document.getElementById('player-table-body');
+            tableBody.innerHTML = '';
+
+            data.forEach(player => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${player.no}</td>
+                    <td>${player.name}</td>
+                    <td>${player.ovr}</td>
+                    <td>${player.position}</td>
+                    <td>${player.shardCost}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Function to filter players based on OVR and Shard Cost
+        function filterPlayers() {
+            const ovrFilter = document.getElementById('ovr-filter').value;
+            const shardFilter = document.getElementById('shard-filter').value;
+
+            let filteredPlayers = [...players];
+
+            // Apply OVR filter
+            if (ovrFilter !== 'all') {
+                if (ovrFilter.includes('-')) {
+                    const [min, max] = ovrFilter.split('-').map(Number);
+                    filteredPlayers = filteredPlayers.filter(player => player.ovr >= min && player.ovr <= max);
+                } else {
+                    const ovr = parseInt(ovrFilter);
+                    filteredPlayers = filteredPlayers.filter(player => player.ovr === ovr);
+                }
+            }
+
+            // Apply Shard Cost filter
+            filteredPlayers = filteredPlayers.filter(player => player.shardCost <= shardFilter);
+
+            return filteredPlayers;
+        }
+
+        // Function to sort players
+        function sortPlayers(data) {
+            const sortBy = document.getElementById('sort-by').value;
+            const sortOrder = document.getElementById('sort-order').value;
+
+            return data.sort((a, b) => {
+                let comparison = 0;
+
+                if (sortBy === 'name') {
+                    comparison = a.name.localeCompare(b.name);
+                } else if (sortBy === 'ovr') {
+                    comparison = a.ovr - b.ovr;
+                } else if (sortBy === 'position') {
+                    comparison = positionOrder[a.position] - positionOrder[b.position];
+                } else if (sortBy === 'shard-cost') {
+                    comparison = a.shardCost - b.shardCost;
+                }
+
+                return sortOrder === 'asc' ? comparison : -comparison;
+            });
+        }
+
+        // Function to save current settings to localStorage
+        function saveSettings() {
+            const settings = {
+                ovrFilter: document.getElementById('ovr-filter').value,
+                shardFilter: document.getElementById('shard-filter').value,
+                sortBy: document.getElementById('sort-by').value,
+                sortOrder: document.getElementById('sort-order').value
+            };
+            localStorage.setItem('totsSettings', JSON.stringify(settings));
+        }
+
+        // Function to load settings from localStorage
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('totsSettings');
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                document.getElementById('ovr-filter').value = settings.ovrFilter;
+                document.getElementById('shard-filter').value = settings.shardFilter;
+                document.getElementById('shard-value').textContent = settings.shardFilter;
+                document.getElementById('sort-by').value = settings.sortBy;
+                document.getElementById('sort-order').value = settings.sortOrder;
+            }
+        }
+
+        // Function to save a preset
+        function savePreset() {
+            const presetName = document.getElementById('preset-name').value.trim();
+            if (!presetName) {
+                alert('Please enter a preset name');
+                return;
+            }
+
+            const preset = {
+                name: presetName,
+                settings: {
+                    ovrFilter: document.getElementById('ovr-filter').value,
+                    shardFilter: document.getElementById('shard-filter').value,
+                    sortBy: document.getElementById('sort-by').value,
+                    sortOrder: document.getElementById('sort-order').value
+                }
+            };
+
+            let presets = JSON.parse(localStorage.getItem('totsPresets')) || [];
+            presets.push(preset);
+            localStorage.setItem('totsPresets', JSON.stringify(presets));
+
+            document.getElementById('preset-name').value = '';
+            loadPresets();
+        }
+
+        // Function to load presets
+        function loadPresets() {
+            const presetList = document.getElementById('preset-list');
+            presetList.innerHTML = '';
+
+            const presets = JSON.parse(localStorage.getItem('totsPresets')) || [];
+
+            presets.forEach((preset, index) => {
+                const presetItem = document.createElement('div');
+                presetItem.className = 'preset-item';
+                presetItem.innerHTML = `
+                    <span>${preset.name}</span>
+                    <div class="preset-actions">
+                        <button class="load-preset-btn" data-index="${index}">Load</button>
+                        <button class="delete-preset-btn" data-index="${index}">Delete</button>
+                    </div>
+                `;
+                presetList.appendChild(presetItem);
+            });
+
+            // Add event listeners to load and delete buttons
+            document.querySelectorAll('.load-preset-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    const presets = JSON.parse(localStorage.getItem('totsPresets')) || [];
+                    const preset = presets[index];
+
+                    document.getElementById('ovr-filter').value = preset.settings.ovrFilter;
+                    document.getElementById('shard-filter').value = preset.settings.shardFilter;
+                    document.getElementById('shard-value').textContent = preset.settings.shardFilter;
+                    document.getElementById('sort-by').value = preset.settings.sortBy;
+                    document.getElementById('sort-order').value = preset.settings.sortOrder;
+
+                    updateTable();
+                });
+            });
+
+            document.querySelectorAll('.delete-preset-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    let presets = JSON.parse(localStorage.getItem('totsPresets')) || [];
+                    presets.splice(index, 1);
+                    localStorage.setItem('totsPresets', JSON.stringify(presets));
+                    loadPresets();
+                });
+            });
+        }
+
+        // Event listeners for filters and sorting
+        document.getElementById('ovr-filter').addEventListener('change', () => {
+            updateTable();
+            saveSettings();
+        });
+        document.getElementById('shard-filter').addEventListener('input', function() {
+            document.getElementById('shard-value').textContent = this.value;
+            updateTable();
+            saveSettings();
+        });
+        document.getElementById('sort-by').addEventListener('change', () => {
+            updateTable();
+            saveSettings();
+        });
+        document.getElementById('sort-order').addEventListener('change', () => {
+            updateTable();
+            saveSettings();
+        });
+
+        // Event listeners for table headers
+        document.getElementById('name-header').addEventListener('click', () => {
+            document.getElementById('sort-by').value = 'name';
+            updateTable();
+            saveSettings();
+        });
+        document.getElementById('ovr-header').addEventListener('click', () => {
+            document.getElementById('sort-by').value = 'ovr';
+            updateTable();
+            saveSettings();
+        });
+        document.getElementById('position-header').addEventListener('click', () => {
+            document.getElementById('sort-by').value = 'position';
+            updateTable();
+            saveSettings();
+        });
+        document.getElementById('shard-cost-header').addEventListener('click', () => {
+            document.getElementById('sort-by').value = 'shard-cost';
+            updateTable();
+            saveSettings();
+        });
+
+        // Event listeners for preset buttons
+        document.getElementById('save-preset').addEventListener('click', savePreset);
+        document.getElementById('load-preset').addEventListener('click', loadPresets);
+
+        // Function to update the table
+        function updateTable() {
+            const filteredPlayers = filterPlayers();
+            const sortedPlayers = sortPlayers(filteredPlayers);
+            renderPlayerTable(sortedPlayers);
+        }
+
+        // Load settings and presets on page load
+        window.addEventListener('load', () => {
+            loadSettings();
+            loadPresets();
+            updateTable();
+        });
+    </script>
+</body>
+</html>
