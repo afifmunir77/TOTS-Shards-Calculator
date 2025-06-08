@@ -80,6 +80,12 @@
         .preset-actions button {
             margin-left: 5px;
         }
+        .summary-section {
+            background-color: #fff8e1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -144,6 +150,14 @@
         </div>
     </div>
 
+    <div class="summary-section">
+        <h2>Summary</h2>
+        <div id="summary-info">
+            <p>Total Players: <span id="total-players">149</span></p>
+            <p>Total Shard Cost: <span id="total-shards">0</span></p>
+        </div>
+    </div>
+
     <table id="player-table">
         <thead>
             <tr>
@@ -160,64 +174,157 @@
     </table>
 
     <script>
-        // Player data
+        // Player data from the PDF
         const players = [
             { no: 1, name: "Henry", ovr: 109, position: "LW", shardCost: 1500 },
             { no: 2, name: "Van Basten", ovr: 109, position: "ST", shardCost: 1250 },
-            { no: 3, name: "Alowairan", ovr: 108, position: "RW", shardCost: 800 },
+            { no: 3, name: "Al Owairan", ovr: 108, position: "RW", shardCost: 800 },
             { no: 4, name: "Gerrard", ovr: 108, position: "CM", shardCost: 650 },
             { no: 5, name: "Vitinha", ovr: 107, position: "CM", shardCost: 450 },
             { no: 6, name: "Shevchenko", ovr: 107, position: "ST", shardCost: 300 },
             { no: 7, name: "Barcola", ovr: 106, position: "LW", shardCost: 300 },
-            { no: 8, name: "Thuram", ovr: 109, position: "RB", shardCost: 1250 },
-            { no: 9, name: "Donnarumma", ovr: 108, position: "GK", shardCost: 1000 },
-            { no: 10, name: "Dembélé", ovr: 108, position: "RW", shardCost: 800 },
-            { no: 11, name: "João Neves", ovr: 108, position: "CDM", shardCost: 500 },
-            { no: 12, name: "Marquinhos", ovr: 107, position: "CB", shardCost: 450 },
-            { no: 13, name: "Rabiot", ovr: 107, position: "CM", shardCost: 300 },
-            { no: 14, name: "Højbjerg", ovr: 106, position: "CDM", shardCost: 200 },
-            { no: 15, name: "Lucio", ovr: 109, position: "CB", shardCost: 1500 },
-            { no: 16, name: "Ribery", ovr: 109, position: "LW", shardCost: 1250 },
-            { no: 17, name: "Kane", ovr: 108, position: "ST", shardCost: 800 },
-            { no: 18, name: "Kohler", ovr: 108, position: "CB", shardCost: 650 },
-            { no: 19, name: "Xabi Alonso", ovr: 108, position: "CM", shardCost: 500 },
-            { no: 20, name: "Musiala", ovr: 107, position: "CAM", shardCost: 450 },
-            { no: 21, name: "Kimmich", ovr: 107, position: "RB", shardCost: 450 },
-            { no: 22, name: "Beckenbauer", ovr: 109, position: "CDM", shardCost: 1250 },
-            { no: 23, name: "Davies", ovr: 108, position: "LB", shardCost: 1000 },
-            { no: 24, name: "Wirtz", ovr: 108, position: "CAM", shardCost: 650 },
-            { no: 25, name: "Zé Roberto", ovr: 108, position: "LM", shardCost: 650 },
-            { no: 26, name: "Tah", ovr: 107, position: "CB", shardCost: 450 },
-            { no: 27, name: "Olise", ovr: 107, position: "RW", shardCost: 450 },
-            { no: 28, name: "Upamecano", ovr: 107, position: "CB", shardCost: 300 },
-            { no: 29, name: "Gullit", ovr: 109, position: "CM", shardCost: 1500 },
-            { no: 30, name: "Beckham", ovr: 109, position: "RM", shardCost: 1000 },
-            { no: 31, name: "Isak", ovr: 108, position: "ST", shardCost: 1000 },
-            { no: 32, name: "Ramires", ovr: 108, position: "CDM", shardCost: 650 },
-            { no: 33, name: "Van Dijk", ovr: 107, position: "CB", shardCost: 800 },
-            { no: 34, name: "Rice", ovr: 107, position: "CDM", shardCost: 450 },
-            { no: 35, name: "Koeman", ovr: 107, position: "CB", shardCost: 300 },
-            { no: 36, name: "Jairzinho", ovr: 109, position: "RW", shardCost: 1250 },
-            { no: 37, name: "Salah", ovr: 108, position: "RW", shardCost: 1000 },
-            { no: 38, name: "Dalglish", ovr: 108, position: "ST", shardCost: 650 },
-            { no: 39, name: "Díaz", ovr: 108, position: "LW", shardCost: 650 },
-            { no: 40, name: "Saliba", ovr: 107, position: "CB", shardCost: 600 },
-            { no: 41, name: "Alexander-Arnold", ovr: 107, position: "RB", shardCost: 450 },
-            { no: 42, name: "Gabriel", ovr: 106, position: "CB", shardCost: 300 },
-            { no: 43, name: "Ronaldo", ovr: 109, position: "ST", shardCost: 2000 },
-            { no: 44, name: "Rijkaard", ovr: 109, position: "CDM", shardCost: 1000 },
-            { no: 45, name: "Lukaku", ovr: 108, position: "ST", shardCost: 650 },
-            { no: 46, name: "Bastoni", ovr: 108, position: "CB", shardCost: 500 },
-            { no: 47, name: "Barella", ovr: 108, position: "CM", shardCost: 500 },
-            { no: 48, name: "Dimarco", ovr: 107, position: "LB", shardCost: 450 },
-            { no: 49, name: "Doumbia", ovr: 107, position: "ST", shardCost: 450 },
-            { no: 50, name: "Maldini", ovr: 109, position: "LB", shardCost: 1500 },
-            { no: 51, name: "Zambrotta", ovr: 108, position: "RB", shardCost: 800 },
-            { no: 52, name: "Gervinho", ovr: 108, position: "LW", shardCost: 650 },
-            { no: 53, name: "Sneijder", ovr: 108, position: "CAM", shardCost: 500 },
-            { no: 54, name: "Retegui", ovr: 108, position: "ST", shardCost: 500 },
-            { no: 55, name: "Lookman", ovr: 107, position: "ST", shardCost: 450 },
-            { no: 56, name: "Ibarbo", ovr: 107, position: "RW", shardCost: 450 }
+            { no: 8, name: "Akliouche", ovr: 106, position: "RW", shardCost: 200 },
+            { no: 9, name: "David", ovr: 106, position: "ST", shardCost: 200 },
+            { no: 10, name: "Thuram", ovr: 109, position: "RB", shardCost: 1250 },
+            { no: 11, name: "Donnarumma", ovr: 108, position: "GK", shardCost: 1000 },
+            { no: 12, name: "Dembélé", ovr: 108, position: "RW", shardCost: 800 },
+            { no: 13, name: "João Neves", ovr: 108, position: "CDM", shardCost: 500 },
+            { no: 14, name: "Marquinhos", ovr: 107, position: "CB", shardCost: 450 },
+            { no: 15, name: "Rabiot", ovr: 107, position: "CM", shardCost: 300 },
+            { no: 16, name: "Højbjerg", ovr: 106, position: "CDM", shardCost: 200 },
+            { no: 17, name: "Cherki", ovr: 106, position: "CAM", shardCost: 200 },
+            { no: 18, name: "Lucio", ovr: 109, position: "CB", shardCost: 1500 },
+            { no: 19, name: "Ribery", ovr: 109, position: "LW", shardCost: 1250 },
+            { no: 20, name: "Kane", ovr: 108, position: "ST", shardCost: 800 },
+            { no: 21, name: "Kohler", ovr: 108, position: "CB", shardCost: 650 },
+            { no: 22, name: "Xabi Alonso", ovr: 108, position: "CM", shardCost: 500 },
+            { no: 23, name: "Musiala", ovr: 107, position: "CAM", shardCost: 450 },
+            { no: 24, name: "Kimmich", ovr: 107, position: "RB", shardCost: 450 },
+            { no: 25, name: "Guirassy", ovr: 107, position: "ST", shardCost: 300 },
+            { no: 26, name: "Ekitike", ovr: 106, position: "ST", shardCost: 200 },
+            { no: 27, name: "Schick", ovr: 106, position: "ST", shardCost: 200 },
+            { no: 28, name: "Beckenbauer", ovr: 109, position: "CDM", shardCost: 1250 },
+            { no: 29, name: "Davies", ovr: 108, position: "LB", shardCost: 1000 },
+            { no: 30, name: "Wirtz", ovr: 108, position: "CAM", shardCost: 650 },
+            { no: 31, name: "Zé Roberto", ovr: 108, position: "LM", shardCost: 650 },
+            { no: 32, name: "Tah", ovr: 107, position: "CB", shardCost: 450 },
+            { no: 33, name: "Olise", ovr: 107, position: "RW", shardCost: 450 },
+            { no: 34, name: "Upamecano", ovr: 107, position: "CB", shardCost: 300 },
+            { no: 35, name: "Zentner", ovr: 106, position: "GK", shardCost: 200 },
+            { no: 36, name: "Orban", ovr: 106, position: "CB", shardCost: 200 },
+            { no: 37, name: "Xhaka", ovr: 106, position: "CDM", shardCost: 200 },
+            { no: 38, name: "Gullit", ovr: 109, position: "CM", shardCost: 1500 },
+            { no: 39, name: "Beckham", ovr: 109, position: "RM", shardCost: 1000 },
+            { no: 40, name: "Isak", ovr: 108, position: "ST", shardCost: 1000 },
+            { no: 41, name: "Ramires", ovr: 108, position: "CDM", shardCost: 650 },
+            { no: 42, name: "Van Dijk", ovr: 107, position: "CB", shardCost: 800 },
+            { no: 43, name: "Rice", ovr: 107, position: "CDM", shardCost: 450 },
+            { no: 44, name: "Koeman", ovr: 107, position: "CB", shardCost: 300 },
+            { no: 45, name: "Saka", ovr: 106, position: "RW", shardCost: 300 },
+            { no: 46, name: "Kerkez", ovr: 106, position: "LB", shardCost: 300 },
+            { no: 47, name: "Mac Allister", ovr: 106, position: "CM", shardCost: 200 },
+            { no: 48, name: "Jairzinho", ovr: 109, position: "RW", shardCost: 1250 },
+            { no: 49, name: "Salah", ovr: 108, position: "RW", shardCost: 1000 },
+            { no: 50, name: "Dalglish", ovr: 108, position: "ST", shardCost: 650 },
+            { no: 51, name: "Díaz", ovr: 108, position: "LW", shardCost: 650 },
+            { no: 52, name: "Saliba", ovr: 107, position: "CB", shardCost: 600 },
+            { no: 53, name: "Alexander-Arnold", ovr: 107, position: "RB", shardCost: 450 },
+            { no: 54, name: "Gabriel", ovr: 106, position: "CB", shardCost: 300 },
+            { no: 55, name: "Matheus Cunha", ovr: 106, position: "ST", shardCost: 300 },
+            { no: 56, name: "Gravenberch", ovr: 106, position: "CM", shardCost: 200 },
+            { no: 57, name: "Ronaldo", ovr: 109, position: "ST", shardCost: 2000 },
+            { no: 58, name: "Rijkaard", ovr: 109, position: "CDM", shardCost: 1000 },
+            { no: 59, name: "Lukaku", ovr: 108, position: "ST", shardCost: 650 },
+            { no: 60, name: "Bastoni", ovr: 108, position: "CB", shardCost: 500 },
+            { no: 61, name: "Barella", ovr: 108, position: "CM", shardCost: 500 },
+            { no: 62, name: "Dimarco", ovr: 107, position: "LB", shardCost: 450 },
+            { no: 63, name: "Doumbia", ovr: 107, position: "ST", shardCost: 450 },
+            { no: 64, name: "Di Lorenzo", ovr: 107, position: "RB", shardCost: 300 },
+            { no: 65, name: "McTominay", ovr: 107, position: "CDM", shardCost: 300 },
+            { no: 66, name: "Thuram", ovr: 106, position: "CDM", shardCost: 300 },
+            { no: 67, name: "Buongiorno", ovr: 106, position: "CB", shardCost: 200 },
+            { no: 68, name: "Nico Paz", ovr: 106, position: "CAM", shardCost: 200 },
+            { no: 69, name: "Maldini", ovr: 109, position: "LB", shardCost: 1500 },
+            { no: 70, name: "Zambrotta", ovr: 108, position: "RB", shardCost: 800 },
+            { no: 71, name: "Gervinho", ovr: 108, position: "LW", shardCost: 650 },
+            { no: 72, name: "Sneijder", ovr: 108, position: "CAM", shardCost: 500 },
+            { no: 73, name: "Retegui", ovr: 108, position: "ST", shardCost: 500 },
+            { no: 74, name: "Lookman", ovr: 107, position: "ST", shardCost: 450 },
+            { no: 75, name: "Ibarbo", ovr: 107, position: "RW", shardCost: 450 },
+            { no: 76, name: "Pulisic", ovr: 107, position: "RW", shardCost: 300 },
+            { no: 77, name: "De Gea", ovr: 106, position: "GK", shardCost: 400 },
+            { no: 78, name: "Kean", ovr: 106, position: "ST", shardCost: 300 },
+            { no: 79, name: "Yildiz", ovr: 106, position: "LW", shardCost: 200 },
+            { no: 80, name: "Ronaldinho", ovr: 109, position: "CAM", shardCost: 1500 },
+            { no: 81, name: "Casillas", ovr: 109, position: "GK", shardCost: 1000 },
+            { no: 82, name: "Fernando Hierro", ovr: 109, position: "CB", shardCost: 800 },
+            { no: 83, name: "Mbappe", ovr: 108, position: "ST", shardCost: 1200 },
+            { no: 84, name: "Bellingham", ovr: 108, position: "CM", shardCost: 1000 },
+            { no: 85, name: "Lamine Yamal", ovr: 108, position: "RW", shardCost: 1000 },
+            { no: 86, name: "Raphinha", ovr: 108, position: "LW", shardCost: 800 },
+            { no: 87, name: "Xavi", ovr: 108, position: "CM", shardCost: 650 },
+            { no: 88, name: "Forlan", ovr: 108, position: "LW", shardCost: 500 },
+            { no: 89, name: "Makelele", ovr: 108, position: "CDM", shardCost: 500 },
+            { no: 90, name: "Vini Jr.", ovr: 107, position: "LW", shardCost: 900 },
+            { no: 91, name: "Valverde", ovr: 107, position: "CM", shardCost: 800 },
+            { no: 92, name: "Pedri", ovr: 107, position: "CM", shardCost: 450 },
+            { no: 93, name: "Kounde", ovr: 107, position: "RB", shardCost: 450 },
+            { no: 94, name: "Laudrup", ovr: 107, position: "CAM", shardCost: 300 },
+            { no: 95, name: "Iñigo Martinez", ovr: 107, position: "CB", shardCost: 300 },
+            { no: 96, name: "Rudiger", ovr: 106, position: "CB", shardCost: 400 },
+            { no: 97, name: "Lewandowski", ovr: 106, position: "ST", shardCost: 400 },
+            { no: 98, name: "Balde", ovr: 106, position: "LB", shardCost: 300 },
+            { no: 99, name: "Joan Garcia", ovr: 106, position: "GK", shardCost: 200 },
+            { no: 100, name: "Messi", ovr: 108, position: "CAM", shardCost: 1200 },
+            { no: 101, name: "Gyökeres", ovr: 108, position: "ST", shardCost: 800 },
+            { no: 102, name: "João Cancelo", ovr: 107, position: "LB", shardCost: 450 },
+            { no: 103, name: "Kanté", ovr: 107, position: "CDM", shardCost: 300 },
+            { no: 104, name: "Mahrez", ovr: 106, position: "RM", shardCost: 300 },
+            { no: 105, name: "Casteels", ovr: 106, position: "GK", shardCost: 200 },
+            { no: 106, name: "C. Ronaldo", ovr: 108, position: "ST", shardCost: 1200 },
+            { no: 107, name: "Benzema", ovr: 108, position: "ST", shardCost: 650 },
+            { no: 108, name: "Milinković-Savić", ovr: 107, position: "CM", shardCost: 300 },
+            { no: 109, name: "Suárez", ovr: 106, position: "ST", shardCost: 300 },
+            { no: 110, name: "Diaby", ovr: 106, position: "RM", shardCost: 300 },
+            { no: 111, name: "De Gea", ovr: 107, position: "GK", shardCost: 600 },
+            { no: 112, name: "Pacho", ovr: 107, position: "CB", shardCost: 450 },
+            { no: 113, name: "Tanaka", ovr: 107, position: "CDM", shardCost: 300 },
+            { no: 114, name: "Ibáñez", ovr: 107, position: "CB", shardCost: 300 },
+            { no: 115, name: "Moreira", ovr: 107, position: "CB", shardCost: 300 },
+            { no: 116, name: "Shaqiri", ovr: 107, position: "CAM", shardCost: 300 },
+            { no: 117, name: "Suárez", ovr: 107, position: "ST", shardCost: 450 },
+            { no: 118, name: "Borja Sainz", ovr: 107, position: "LM", shardCost: 300 },
+            { no: 119, name: "Diaby", ovr: 107, position: "RM", shardCost: 300 },
+            { no: 120, name: "Evander", ovr: 107, position: "CAM", shardCost: 300 },
+            { no: 121, name: "Steijn", ovr: 107, position: "CAM", shardCost: 300 },
+            { no: 122, name: "Mbappé", ovr: 109, position: "ST", shardCost: 2000 },
+            { no: 123, name: "Messi", ovr: 109, position: "CAM", shardCost: 2000 },
+            { no: 124, name: "Salah", ovr: 109, position: "RW", shardCost: 1500 },
+            { no: 125, name: "Bellingham", ovr: 109, position: "CM", shardCost: 1500 },
+            { no: 126, name: "Isaac", ovr: 109, position: "ST", shardCost: 1250 },
+            { no: 127, name: "Gyökeres", ovr: 109, position: "ST", shardCost: 1250 },
+            { no: 128, name: "Pedri", ovr: 109, position: "CM", shardCost: 1250 },
+            { no: 129, name: "C. Ronaldo", ovr: 109, position: "ST", shardCost: 2000 },
+            { no: 130, name: "Van Dijk", ovr: 109, position: "CB", shardCost: 1500 },
+            { no: 131, name: "Yamal", ovr: 109, position: "RW", shardCost: 1500 },
+            { no: 132, name: "Dembélé", ovr: 109, position: "LW", shardCost: 1500 },
+            { no: 133, name: "Raphinha", ovr: 109, position: "RW", shardCost: 1250 },
+            { no: 134, name: "Bastoni", ovr: 109, position: "CB", shardCost: 1250 },
+            { no: 135, name: "Kane", ovr: 109, position: "ST", shardCost: 1000 },
+            { no: 136, name: "João Neves", ovr: 109, position: "CDM", shardCost: 800 },
+            { no: 137, name: "Retegui", ovr: 109, position: "ST", shardCost: 800 },
+            { no: 138, name: "Nuno Mendes", ovr: 108, position: "LB", shardCost: 1000 },
+            { no: 139, name: "Osimhen", ovr: 108, position: "ST", shardCost: 800 },
+            { no: 140, name: "Tah", ovr: 108, position: "CB", shardCost: 650 },
+            { no: 141, name: "Rice", ovr: 108, position: "CDM", shardCost: 650 },
+            { no: 142, name: "Iñigo Martínez", ovr: 108, position: "CB", shardCost: 650 },
+            { no: 143, name: "Barella", ovr: 108, position: "CM", shardCost: 800 },
+            { no: 144, name: "Vinícius Jr.", ovr: 108, position: "LW", shardCost: 1200 },
+            { no: 145, name: "Barcola", ovr: 108, position: "LW", shardCost: 1000 },
+            { no: 146, name: "Musiala", ovr: 108, position: "CAM", shardCost: 650 },
+            { no: 147, name: "Alexander-Arnold", ovr: 108, position: "RB", shardCost: 650 },
+            { no: 148, name: "McTominay", ovr: 108, position: "CDM", shardCost: 650 },
+            { no: 149, name: "Kanté", ovr: 108, position: "CDM", shardCost: 650 }
         ];
 
         // Position order for sorting
@@ -252,12 +359,22 @@
                 `;
                 tableBody.appendChild(row);
             });
+
+            // Update summary
+            updateSummary(data);
+        }
+
+        // Function to update summary information
+        function updateSummary(data) {
+            document.getElementById('total-players').textContent = data.length;
+            const totalShards = data.reduce((sum, player) => sum + player.shardCost, 0);
+            document.getElementById('total-shards').textContent = totalShards;
         }
 
         // Function to filter players based on OVR and Shard Cost
         function filterPlayers() {
             const ovrFilter = document.getElementById('ovr-filter').value;
-            const shardFilter = document.getElementById('shard-filter').value;
+            const shardFilter = parseInt(document.getElementById('shard-filter').value);
 
             let filteredPlayers = [...players];
 
@@ -283,7 +400,7 @@
             const sortBy = document.getElementById('sort-by').value;
             const sortOrder = document.getElementById('sort-order').value;
 
-            return data.sort((a, b) => {
+            return [...data].sort((a, b) => {
                 let comparison = 0;
 
                 if (sortBy === 'name') {
@@ -355,7 +472,10 @@
             const presetList = document.getElementById('preset-list');
             presetList.innerHTML = '';
 
-            const presets = JSON.parse(localStorage.getItem('totsPresets')) || [];
+            let presets = JSON.parse(localStorage.getItem('totsPresets')) || [];
+
+            // Sort presets alphabetically
+            presets.sort((a, b) => a.name.localeCompare(b.name));
 
             presets.forEach((preset, index) => {
                 const presetItem = document.createElement('div');
@@ -384,6 +504,7 @@
                     document.getElementById('sort-order').value = preset.settings.sortOrder;
 
                     updateTable();
+                    saveSettings();
                 });
             });
 
@@ -403,15 +524,18 @@
             updateTable();
             saveSettings();
         });
+
         document.getElementById('shard-filter').addEventListener('input', function() {
             document.getElementById('shard-value').textContent = this.value;
             updateTable();
             saveSettings();
         });
+
         document.getElementById('sort-by').addEventListener('change', () => {
             updateTable();
             saveSettings();
         });
+
         document.getElementById('sort-order').addEventListener('change', () => {
             updateTable();
             saveSettings();
@@ -420,21 +544,32 @@
         // Event listeners for table headers
         document.getElementById('name-header').addEventListener('click', () => {
             document.getElementById('sort-by').value = 'name';
+            const currentOrder = document.getElementById('sort-order').value;
+            document.getElementById('sort-order').value = currentOrder === 'asc' ? 'desc' : 'asc';
             updateTable();
             saveSettings();
         });
+
         document.getElementById('ovr-header').addEventListener('click', () => {
             document.getElementById('sort-by').value = 'ovr';
+            const currentOrder = document.getElementById('sort-order').value;
+            document.getElementById('sort-order').value = currentOrder === 'asc' ? 'desc' : 'asc';
             updateTable();
             saveSettings();
         });
+
         document.getElementById('position-header').addEventListener('click', () => {
             document.getElementById('sort-by').value = 'position';
+            const currentOrder = document.getElementById('sort-order').value;
+            document.getElementById('sort-order').value = currentOrder === 'asc' ? 'desc' : 'asc';
             updateTable();
             saveSettings();
         });
+
         document.getElementById('shard-cost-header').addEventListener('click', () => {
             document.getElementById('sort-by').value = 'shard-cost';
+            const currentOrder = document.getElementById('sort-order').value;
+            document.getElementById('sort-order').value = currentOrder === 'asc' ? 'desc' : 'asc';
             updateTable();
             saveSettings();
         });
