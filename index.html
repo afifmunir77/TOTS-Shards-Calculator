@@ -466,58 +466,60 @@
             document.getElementById('preset-name').value = '';
             loadPresets();
         }
-
         // Function to load presets
-        function loadPresets() {
-            const presetList = document.getElementById('preset-list');
-            presetList.innerHTML = '';
+function loadPresets() {
+    const presetList = document.getElementById('preset-list');
+    presetList.innerHTML = '';
 
+    let presets = JSON.parse(localStorage.getItem('totsPresets')) || [];
+
+    // Sort presets alphabetically
+    presets.sort((a, b) => a.name.localeCompare(b.name));
+
+    presets.forEach((preset, index) => {
+        const presetItem = document.createElement('div');
+        presetItem.className = 'preset-item';
+        presetItem.innerHTML = `
+            <span>${preset.name}</span>
+            <div class="preset-actions">
+                <button class="load-preset-btn" data-name="${preset.name}">Load</button>
+                <button class="delete-preset-btn" data-index="${index}">Delete</button>
+            </div>
+        `;
+        presetList.appendChild(presetItem);
+    });
+
+    // Add event listeners to load and delete buttons
+    document.querySelectorAll('.load-preset-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const presetName = this.getAttribute('data-name');
+            const presets = JSON.parse(localStorage.getItem('totsPresets')) || [];
+            const preset = presets.find(p => p.name === presetName);
+
+            if (preset) {
+                document.getElementById('ovr-filter').value = preset.settings.ovrFilter;
+                document.getElementById('shard-filter').value = preset.settings.shardFilter;
+                document.getElementById('shard-value').textContent = preset.settings.shardFilter;
+                document.getElementById('sort-by').value = preset.settings.sortBy;
+                document.getElementById('sort-order').value = preset.settings.sortOrder;
+
+                updateTable();
+                saveSettings();
+            }
+        });
+    });
+
+    document.querySelectorAll('.delete-preset-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const index = parseInt(this.getAttribute('data-index'));
             let presets = JSON.parse(localStorage.getItem('totsPresets')) || [];
+            presets.splice(index, 1);
+            localStorage.setItem('totsPresets', JSON.stringify(presets));
+            loadPresets();
+        });
+    });
+}
 
-            // Sort presets alphabetically
-            presets.sort((a, b) => a.name.localeCompare(b.name));
-
-            presets.forEach((preset, index) => {
-                const presetItem = document.createElement('div');
-                presetItem.className = 'preset-item';
-                presetItem.innerHTML = `
-                    <span>${preset.name}</span>
-                    <div class="preset-actions">
-                        <button class="load-preset-btn" data-index="${index}">Load</button>
-                        <button class="delete-preset-btn" data-index="${index}">Delete</button>
-                    </div>
-                `;
-                presetList.appendChild(presetItem);
-            });
-
-            // Add event listeners to load and delete buttons
-            document.querySelectorAll('.load-preset-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const index = this.getAttribute('data-index');
-                    const presets = JSON.parse(localStorage.getItem('totsPresets')) || [];
-                    const preset = presets[index];
-
-                    document.getElementById('ovr-filter').value = preset.settings.ovrFilter;
-                    document.getElementById('shard-filter').value = preset.settings.shardFilter;
-                    document.getElementById('shard-value').textContent = preset.settings.shardFilter;
-                    document.getElementById('sort-by').value = preset.settings.sortBy;
-                    document.getElementById('sort-order').value = preset.settings.sortOrder;
-
-                    updateTable();
-                    saveSettings();
-                });
-            });
-
-            document.querySelectorAll('.delete-preset-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const index = this.getAttribute('data-index');
-                    let presets = JSON.parse(localStorage.getItem('totsPresets')) || [];
-                    presets.splice(index, 1);
-                    localStorage.setItem('totsPresets', JSON.stringify(presets));
-                    loadPresets();
-                });
-            });
-        }
 
         // Event listeners for filters and sorting
         document.getElementById('ovr-filter').addEventListener('change', () => {
